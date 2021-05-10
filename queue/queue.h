@@ -157,6 +157,8 @@ QueueValue queue_peek_tail(Queue *queue);
 
 int queue_is_empty(Queue *queue);
 
+size_t queue_size(Queue* queue);
+
 #ifdef __cplusplus
 }
 #endif

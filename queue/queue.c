@@ -35,6 +35,7 @@ struct _QueueEntry {
 struct _Queue {
 	QueueEntry *head;
 	QueueEntry *tail;
+	size_t size;
 };
 
 Queue *queue_new(void)
@@ -49,6 +50,7 @@ Queue *queue_new(void)
 
 	queue->head = NULL;
 	queue->tail = NULL;
+	queue->size = 0;
 
 	return queue;
 }
@@ -59,7 +61,8 @@ void queue_free(Queue *queue)
 	/* Empty the queue */
 
 	while (!queue_is_empty(queue)) {
-		free(queue->head->data);
+		if (queue->head->data != NULL)
+			free(queue->head->data);
 		entry = queue->head;
 		queue->head = entry->next;
 		if (queue->head == NULL) {
@@ -121,6 +124,8 @@ int queue_push_head(Queue *queue, QueueValue data, size_t length)
 		queue->head = new_entry;
 	}
 
+	queue->size++;
+
 	return 1;
 }
 
@@ -159,6 +164,7 @@ int queue_pop_head(Queue *queue, QueueValue data, size_t length)
 	/* Free back the queue entry structure */
 
 	free(entry);
+	queue->size--;
 
 	return 1;
 }
@@ -215,6 +221,8 @@ int queue_push_tail(Queue *queue, QueueValue data, size_t length)
 		queue->tail = new_entry;
 	}
 
+	queue->size++;
+
 	return 1;
 }
 
@@ -256,6 +264,8 @@ int queue_pop_tail(Queue *queue, QueueValue data, size_t length)
 
 	free(entry);
 
+	queue->size--;
+
 	return 1;
 }
 
@@ -271,5 +281,15 @@ QueueValue queue_peek_tail(Queue *queue)
 int queue_is_empty(Queue *queue)
 {
 	return queue->head == NULL;
+}
+
+size_t queue_size(Queue* queue)
+{
+	if (queue_is_empty(queue))
+	{
+		return 0;
+	}
+
+	return queue->size;
 }
 
